@@ -82,7 +82,7 @@
             this.end.TabIndex = 4;
             this.end.Text = "Game Over\r\n\r\nPress F1 to restrat\r\n\r\nPress Esc to quit";
             this.end.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.end.Click += new System.EventHandler(this.end_Click);
+           
             // 
             // pointlbl
             // 
