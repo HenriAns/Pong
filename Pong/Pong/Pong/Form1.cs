@@ -19,17 +19,40 @@ namespace Pong
         int speed_top = 4;
         int point = 0;
 
+        string name;
 
         Thread ballcolor;
         Thread panelcolor;
-              
-      
+
+        TcpClient client = new TcpClient();
+        NetworkStream stream;
 
         public Form1()
         {
             InitializeComponent();
 
-          
+
+            
+
+
+            try
+            {
+                IPAddress serverAddress = IPAddress.Parse("127.0.0.1");
+                client.Connect(serverAddress, 8001);
+               
+                stream = client.GetStream();
+
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                Environment.Exit(0);
+            }
+
+
+            
+
 
             
             Cursor.Hide();
@@ -74,6 +97,8 @@ namespace Pong
 
                 panelcolor = new Thread(PanelColor);
                 panelcolor.Start();
+
+             
             
             }
 
@@ -93,24 +118,70 @@ namespace Pong
             if (ball.Top <= playpanel.Top) {
 
                 speed_top = -speed_top;
+                
 
             } 
 
             if (ball.Bottom >= playpanel.Bottom){
-            
+
+
+
+
+                SendScore();
                 timer1.Enabled = false;
                 end.Visible = true;
                 pauselbl.Visible = false;
+                               
+               
+                
+                
             }
 
             
         }
 
+
+
+        private void SendScore() {
+
+            ASCIIEncoding msg = new ASCIIEncoding();
+
+            byte[] sendBytes = msg.GetBytes("Score ="+ this.pointlbl.Text);
+
+            stream.Write(sendBytes, 0, sendBytes.Length); 
+        
+        }
+
+
+        private void SendMessage()
+        {
+
+            ASCIIEncoding msg = new ASCIIEncoding();
+
+
+            byte[] sendBytes = msg.GetBytes("Player closed his connexion");
+
+            stream.Write(sendBytes, 0, sendBytes.Length);
+
+        }
+
+
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape) {
 
+
+
+
+                SendMessage();
+
+                MessageBox.Show("Thanks for playing");
+
+
+
+                stream.Close();
                 this.Close();
+
                 
             }
 
@@ -138,6 +209,12 @@ namespace Pong
                 timer2.Enabled = true;
                 pauselbl.Visible = false;
                 end.Visible = false;
+
+                ASCIIEncoding msg = new ASCIIEncoding();
+
+                byte[] sendBytes = msg.GetBytes("Game Started");
+
+                stream.Write(sendBytes, 0, sendBytes.Length);
                                           
             
             }
@@ -148,6 +225,12 @@ namespace Pong
                 timer1.Enabled = false;
                 pauselbl.Visible = true;
                 end.Visible = false;
+
+                ASCIIEncoding msg = new ASCIIEncoding();
+
+                byte[] sendBytes = msg.GetBytes("Game Paused");
+
+                stream.Write(sendBytes, 0, sendBytes.Length);
               
 
                 
@@ -196,7 +279,7 @@ namespace Pong
            
         }
 
-     
+      
       
      
     }
