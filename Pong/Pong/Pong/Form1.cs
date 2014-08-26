@@ -19,7 +19,7 @@ namespace Pong
         int speed_top = 4;
         int point = 0;
 
-        string name;
+        
 
         Thread ballcolor;
         Thread panelcolor;
